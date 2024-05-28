@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-
+//StatefulWidget, te un estat mutable/canviable
 class KanbanPage extends StatefulWidget {
   @override
   _KanbanPageState createState() => _KanbanPageState();
 }
 
 class _KanbanPageState extends State<KanbanPage> {
+  /* Llistes de "maps" amb clau valor, sent strings i strings
+   */
   List<Map<String, String>> toDoList = [];
   List<Map<String, String>> inProgressList = [];
   List<Map<String, String>> doneList = [];
@@ -14,7 +16,7 @@ class _KanbanPageState extends State<KanbanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kanban Page'),
+        title: Text('Kanban'),
       ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -119,7 +121,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Task'),
+        title: Text('Nova tasca'),
       ),
       body: Form(
         key: _formKey,
@@ -129,17 +131,17 @@ class _NewTaskPageState extends State<NewTaskPage> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: InputDecoration(labelText: 'Titol'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
+                    return 'El titol no pot ser buit';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: 'Descripcio'),
               ),
               DropdownButtonFormField(
                 value: _status,
@@ -165,7 +167,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
                     });
                   }
                 },
-                child: Text('Submit'),
+                child: Text('Guardar'),
               ),
             ],
           ),
@@ -215,14 +217,14 @@ class _EditTaskPageState extends State<EditTaskPage> {
                 decoration: InputDecoration(labelText: 'Titol'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
+                    return 'El titul no pot ser buit';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Descripció'),
+                decoration: InputDecoration(labelText: 'Descripcio'),
               ),
               DropdownButtonFormField(
                 value: _status,
@@ -248,13 +250,13 @@ class _EditTaskPageState extends State<EditTaskPage> {
                     });
                   }
                 },
-                child: Text('Submit'),
+                child: Text('Enviar'),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('Delete'),
+                child: Text('Eliminar'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                 ),
