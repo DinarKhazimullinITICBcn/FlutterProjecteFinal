@@ -6,6 +6,7 @@ import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
   @override
   State<LoginPage> createState() => _PaginaLoginState();
 }
@@ -18,14 +19,15 @@ class _PaginaLoginState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    checkApiKeyAndNavigate();
+    _checkApiKey(); // Comprova si l'API key ja existeix
   }
 
-  void checkApiKeyAndNavigate() async {
+  // Funció per comprovar si l'API key ja està guardada a SharedPreferences
+  void _checkApiKey() async {
     final prefs = await SharedPreferences.getInstance();
-    String? apiKey = prefs.getString('api_key');
-
+    var apiKey = prefs.getString('api_key');
     if (apiKey != null) {
+      // Si l'API key existeix, navega directament a la pàgina principal
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -34,33 +36,38 @@ class _PaginaLoginState extends State<LoginPage> {
     }
   }
 
+  // Funció per iniciar sessió i guardar les credencials i l'API key
   void login(String email, String password, BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('email', email);
-    await prefs.setString('password', password);
+    await prefs.setString('email', email); // Guarda el correu electrònic
+    await prefs.setString('password', password); // Guarda la contrasenya
 
-    // Genera una clave API aleatoria
-    var random = Random.secure();
-    var values = List<int>.generate(32, (i) => random.nextInt(256));
-    var apiKey = base64UrlEncode(values);
+    var apiKey = prefs.getString('api_key');
+    if (apiKey == null) {
+      // Si l'API key no existeix, genera una de nova
+      var random = Random.secure();
+      var values = List<int>.generate(32, (i) => random.nextInt(256));
+      apiKey = base64UrlEncode(values);
 
-    // Print the generated API key
-    print('Generated API Key: $apiKey');
+      try {
+        await prefs.setString('api_key', apiKey); // Guarda l'API key generada
+      } catch (e) {
+        print('Error guardant l\'API key: $e');
+        return;
+      }
+    }
 
-    // Guarda la clave API en SharedPreferences
-    await prefs.setString('api_key', apiKey);
-
+    // Mostra un missatge de confirmació
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-          content: Text('Credenciales y API Key guardadas con éxito!')),
+          content: Text('Credencials i API Key guardades amb èxit!')),
     );
 
+    // Navega a la pàgina principal
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) => const MyHomePage(
-                title: 'KANBAN',
-              )),
+          builder: (context) => const MyHomePage(title: 'KANBAN')),
     );
   }
 
@@ -68,7 +75,7 @@ class _PaginaLoginState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Iniciar sesión'),
+        title: const Text('Iniciar sessió'),
       ),
       body: Form(
         key: validatedata,
@@ -76,33 +83,33 @@ class _PaginaLoginState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 controller: user,
-                decoration: InputDecoration(
-                  labelText: 'Correo electrónico',
+                decoration: const InputDecoration(
+                  labelText: 'Correu electrònic',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce tu correo electrónico';
+                    return 'Si us plau, introdueix el teu correu electrònic';
                   }
                   return null;
                 },
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 controller: passw,
                 obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
+                decoration: const InputDecoration(
+                  labelText: 'Contrasenya',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce tu contraseña';
+                    return 'Si us plau, introdueix la teva contrasenya';
                   }
                   return null;
                 },
@@ -111,10 +118,10 @@ class _PaginaLoginState extends State<LoginPage> {
             ElevatedButton(
               onPressed: () {
                 if (validatedata.currentState!.validate()) {
-                  login(user.text, passw.text, context);
+                  login(user.text, passw.text, context); // Crida a la funció d'inici de sessió
                 }
               },
-              child: Text('Iniciar sesión'),
+              child: const Text('Iniciar sessió'),
             ),
           ],
         ),
